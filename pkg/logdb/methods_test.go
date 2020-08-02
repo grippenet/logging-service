@@ -2,78 +2,58 @@ package logdb
 
 import (
 	"testing"
+	"time"
+
+	"github.com/influenzanet/logging-service/pkg/types"
 )
 
 func TestSaveLogEvent(t *testing.T) {
 	t.Run("Add log event ", func(t *testing.T) {
-		t.Error("test unimplemented")
+		_, err := testDBService.SaveLogEvent(testInstanceID, types.LogEvent{
+			Time: time.Now().Unix(),
+			Msg:  "test event",
+		})
+		if err != nil {
+			t.Errorf("unexpected error: %s", err.Error())
+		}
 	})
 }
 
 func TestFindLogEvents(t *testing.T) {
-	/*
-		pStates := []types.ParticipantState{
-			{
-				ParticipantID: "1",
-				StudyStatus:   "active",
-				Flags: map[string]string{
-					"test1": "1",
-				},
-			},
-			{
-				ParticipantID: "2",
-				StudyStatus:   "active",
-			},
+	testLogEvents := []types.LogEvent{
+		{Time: 15, EventType: "Type1", UserID: "testuser1", EventName: "action1", Msg: "content", InstanceID: testInstanceID},
+		{Time: 20, EventType: "Type1", UserID: "testuser1", EventName: "action1", Msg: "content", InstanceID: testInstanceID},
+		{Time: 25, EventType: "Type1", UserID: "testuser1", EventName: "action1", Msg: "content", InstanceID: testInstanceID},
+		{Time: 15, EventType: "Type2", UserID: "testuser1", EventName: "action1", Msg: "content", InstanceID: testInstanceID},
+		{Time: 25, EventType: "Type2", UserID: "testuser1", EventName: "action1", Msg: "content", InstanceID: testInstanceID},
+		{Time: 15, EventType: "Type1", UserID: "testuser2", EventName: "action1", Msg: "content", InstanceID: testInstanceID},
+		{Time: 25, EventType: "Type1", UserID: "testuser2", EventName: "action1", Msg: "content", InstanceID: testInstanceID},
+		{Time: 15, EventType: "Type1", UserID: "testuser2", EventName: "action2", Msg: "content", InstanceID: testInstanceID},
+		{Time: 25, EventType: "Type1", UserID: "testuser2", EventName: "action2", Msg: "content", InstanceID: testInstanceID},
+	}
+
+	for _, e := range testLogEvents {
+		_, err := testDBService.SaveLogEvent(testInstanceID, e)
+		if err != nil {
+			t.Errorf("unexpected error: %v", err)
+			return
 		}
+	}
 
-		for _, ps := range pStates {
-			_, err := testDBService.SaveParticipantState(testInstanceID, testStudyKey, ps)
-			if err != nil {
-				t.Errorf("unexpected error: %s", err.Error())
-				return
-			}
+	t.Run("Finding all events ", func(t *testing.T) {
+		err := testDBService.FindLogEvents(testInstanceID, types.LogQuery{
+			EventType: "Type1",
+		},
+			func(instanceID string, event types.LogEvent, args ...interface{}) error {
+				if event.EventType != "Type1" {
+					t.Errorf("unexpected event returned: %v", event)
+				}
+				return nil
+			},
+		)
+		if err != nil {
+			t.Errorf("unexpected error: %v", err)
+			return
 		}
-
-		t.Run("Finding inactive status ", func(t *testing.T) {
-			err := testDBService.FindAndExecuteOnParticipantsStates(
-				testInstanceID,
-				testStudyKey,
-				func(dbService *StudyDBService, p types.ParticipantState, instanceID, studyKey string) error {
-					_, ok := p.Flags["test1"]
-					if !ok {
-						p.Flags = map[string]string{
-							"test1": "1",
-						}
-					} else {
-						p.Flags["test1"] = "newvalue"
-					}
-					_, err := dbService.SaveParticipantState(instanceID, studyKey, p)
-					return err
-				})
-			if err != nil {
-				t.Errorf("unexpected error: %s", err.Error())
-				return
-			}
-
-			p, err := testDBService.FindParticipantState(testInstanceID, testStudyKey, pStates[0].ParticipantID)
-			if err != nil {
-				t.Errorf("unexpected error: %s", err.Error())
-				return
-			}
-			testval, ok := p.Flags["test1"]
-			if !ok || testval != "newvalue" {
-				t.Errorf("unexpected flags for p1: %s", p.Flags)
-			}
-
-			p, err = testDBService.FindParticipantState(testInstanceID, testStudyKey, pStates[1].ParticipantID)
-			if err != nil {
-				t.Errorf("unexpected error: %s", err.Error())
-				return
-			}
-			testval, ok = p.Flags["test1"]
-			if !ok || testval != "1" {
-				t.Errorf("unexpected flags for p2: %s", p.Flags)
-			}
-		})*/
-	t.Error("test unimplemented")
+	})
 }

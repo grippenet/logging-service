@@ -29,6 +29,29 @@ func (dbService *LogDBService) FindLogEvents(
 	defer cancel()
 
 	filter := bson.M{}
+	if query.Start > 0 && query.End > 0 {
+		filter["$and"] = bson.A{
+			bson.M{"time": bson.M{"$gt": query.Start}},
+			bson.M{"time": bson.M{"$lt": query.End}},
+		}
+	} else if query.Start > 0 {
+		filter["time"] = bson.M{"$gt": query.Start}
+	} else if query.End > 0 {
+		filter["time"] = bson.M{"$lt": query.End}
+	}
+	if len(query.UserID) > 0 {
+		filter["userID"] = query.UserID
+	}
+	if len(query.Origin) > 0 {
+		filter["origin"] = query.Origin
+	}
+	if len(query.EventName) > 0 {
+		filter["eventName"] = query.EventName
+	}
+	if len(query.EventType) > 0 {
+		filter["eventType"] = query.EventType
+	}
+
 	cur, err := dbService.collectionRefLogs(instanceID).Find(
 		ctx,
 		filter,

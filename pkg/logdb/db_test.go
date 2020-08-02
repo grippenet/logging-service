@@ -11,10 +11,6 @@ import (
 
 var testDBService *LogDBService
 
-const (
-	testDBNamePrefix = "TEST_"
-)
-
 var (
 	testInstanceID = strconv.FormatInt(time.Now().Unix(), 10)
 )
@@ -25,11 +21,11 @@ func setupTestDBService() {
 }
 
 func dropTestDB() {
-	log.Println("Drop test database: studydb package")
+	log.Println("Drop test database: logdb package")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	err := testDBService.DBClient.Database(testDBNamePrefix + testInstanceID + "_users").Drop(ctx)
+	err := testDBService.DBClient.Database(testDBService.DBNamePrefix + testInstanceID + "_users").Drop(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
