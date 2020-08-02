@@ -54,7 +54,6 @@ func (_m *LoggingServiceAPI_GetLogs) Send(event *api.LogEvent) error {
 }
 
 func TestGetLogs(t *testing.T) {
-	t.Error("test unimplemented")
 	s := loggingServer{
 		logDBservice: testLogDBService,
 	}
@@ -89,7 +88,7 @@ func TestGetLogs(t *testing.T) {
 			},
 			EventType: api.LogEventType_SECURITY,
 		}, mock)
-		ok, msg := testutils.ShouldHaveGrpcErrorStatus(err, "missing arguments")
+		ok, msg := testutils.ShouldHaveGrpcErrorStatus(err, "permission denied")
 		if !ok {
 			t.Error(msg)
 		}
