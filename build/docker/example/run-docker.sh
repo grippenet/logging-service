@@ -1,0 +1,1 @@
+docker run --env-file logging-service-env.list -p 5006:5006 github.com/influenzanet/logging-service:$1
