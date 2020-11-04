@@ -18,7 +18,7 @@ type LogEvent struct {
 }
 
 func (e LogEvent) ToAPI() *api.LogEvent {
-	eventType := api.LogEventType_NONE
+	var eventType api.LogEventType
 	switch e.EventType {
 	case "SECURITY":
 		eventType = api.LogEventType_SECURITY
@@ -26,6 +26,8 @@ func (e LogEvent) ToAPI() *api.LogEvent {
 		eventType = api.LogEventType_ERROR
 	case "LOG":
 		eventType = api.LogEventType_LOG
+	default:
+		eventType = api.LogEventType_NONE
 	}
 	return &api.LogEvent{
 		Id:         e.ID.Hex(),
