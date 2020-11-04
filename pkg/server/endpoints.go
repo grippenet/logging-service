@@ -25,6 +25,7 @@ func (s *loggingServer) Status(ctx context.Context, _ *empty.Empty) (*api_types.
 
 func (s *loggingServer) SaveLogEvent(ctx context.Context, req *api.NewLogEvent) (*api_types.ServiceStatus, error) {
 	if req == nil || len(req.InstanceId) < 1 || req.EventType == api.LogEventType_NONE {
+		log.Printf("SaveLogEvent: unexpected request -> %v", req)
 		return nil, status.Error(codes.InvalidArgument, "missing arguments")
 	}
 
@@ -52,8 +53,10 @@ func (s *loggingServer) SaveLogEvent(ctx context.Context, req *api.NewLogEvent) 
 
 func (s *loggingServer) GetLogs(req *api.LogQuery, stream api.LoggingServiceApi_GetLogsServer) error {
 	if req == nil || token_checks.IsTokenEmpty(req.Token) || stream == nil {
+		log.Printf("GetLogs: unexpected request or stream -> %v, %v", req, stream)
 		return status.Error(codes.InvalidArgument, "missing arguments")
 	}
+
 	if !token_checks.CheckRoleInToken(req.Token, "ADMIN") {
 		log.Println("SECURITY: no admin rolen in token")
 		return status.Error(codes.PermissionDenied, "permission denied")
