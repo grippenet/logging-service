@@ -3,6 +3,7 @@ module github.com/influenzanet/logging-service
 go 1.15
 
 require (
+	github.com/coneno/logger v1.2.1
 	github.com/golang/protobuf v1.4.3
 	github.com/influenzanet/go-utils v0.2.6
 	go.mongodb.org/mongo-driver v1.4.3
