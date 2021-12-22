@@ -2,7 +2,7 @@
 
 PROTO_BUILD_DIR = ../../..
 DOCKER_OPTS ?= --rm
-
+TARGET_DIR ?= ./
 # TEST_ARGS = -v | grep -c RUN
 
 VERSION := $(shell git describe --tags --abbrev=0)
@@ -21,8 +21,11 @@ api:
 	if [ ! -d "./pkg/api" ]; then mkdir -p "./pkg/api"; else  find "./pkg/api" -type f -delete &&  mkdir -p "./pkg/api"; fi
 	find ./api/logging_service/*.proto -maxdepth 1 -type f -exec protoc {} --proto_path=./api --go_out=plugins=grpc:$(PROTO_BUILD_DIR) \;
 
-build:
-	go build .
+logging_service:
+	go build -o $(TARGET_DIR) ./cmd/logging_service_app
+
+build: logging_service
+	# Dummy
 
 test:
 	./test/test.sh $(TEST_ARGS)
